@@ -14,6 +14,8 @@ RDK = robolink.Robolink()
 robot = RDK.Item("Staubli TX2-40")
 gripper = RDK.Item("LWS_VakuumGreifer_14")
 
+jengaFrame = RDK.Item("JengaPieces")
+
 # Create RTS object and configure gripper
 rts = RTS.RTS(RDK, robot, gripper)
 rts.addConnection("dVacuum", "98FE10BA-0446-4B8A-A8CF-35B98F42725A", "dio")
@@ -69,6 +71,10 @@ if __name__ == "__main__":
         current_pos = current_pose.Pos()
         print(f"Current position after home: X={current_pos[0]:.1f}, Y={current_pos[1]:.1f}, Z={current_pos[2]:.1f}")
         
+        # get current jengaframe pose
+        basejengaFrame = jengaFrame.Pose()
+        print(basejengaFrame)
+                
         # Test a small joint movement - should be very safe
         print("\n=== Test 0: Small Joint Movement ===")
         print("Testing small joint movement (1 degree in first joint)")
