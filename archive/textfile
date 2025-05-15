@@ -1,0 +1,21 @@
+2 Einführung Teaching (Pseudocode)
+
+START
+
+1. Bewege Roboter zur Home-Position
+
+2. Bewege Roboter über Position A (mit Sicherheitsabstand von 2 cm)
+3. Senke Roboter auf Greifhöhe von Jenga-Stein bei Position A
+4. Aktiviere Vakuumgreifer (Vakuum EIN)
+5. Warte kurze Zeit zur Sicherstellung des Griffs (z. B. 1 Sekunde)
+6. Hebe Roboter wieder auf Sicherheitsabstand über Position A
+
+7. Bewege Roboter über Position B (mit Sicherheitsabstand von 2 cm)
+8. Senke Roboter auf Absetz-Höhe bei Position B
+9. Deaktiviere Vakuumgreifer (Vakuum AUS)
+10. Warte kurze Zeit zum sicheren Loslassen (z. B. 1 Sekunde)
+11. Hebe Roboter wieder auf Sicherheitsabstand über Position B
+
+12. Bewege Roboter zurück zur Home-Position
+
+END

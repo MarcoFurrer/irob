@@ -1,0 +1,22 @@
+program main()
+   -- Variablen für die Positionen
+   point p1 := [300, 0, 200, 0, 180, 0] 
+   point p2 := [300, 200, 200, 0, 180, 0]
+   point p3 := [100, 200, 200, 0, 180, 0]
+   point p4 := [100, 0, 200, 0, 180, 0]
+
+   -- Initialisierung
+   setCartOrient(p1, zyz) 
+   setCartOrient(p2, zyz)
+   setCartOrient(p3, zyz)
+   setCartOrient(p4, zyz)
+
+   -- Bewegung
+   movej(p1, 20, 50) 
+   movel(p2, 10, 30) 
+   movel(p3, 10, 30)
+   movel(p4, 10, 30)
+   movel(p1, 10, 30) 
+   -- Programm beenden
+   halt
+endProgram
