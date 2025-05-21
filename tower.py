@@ -45,4 +45,4 @@ class Tower:
             orientation = [0, 180, 180]
 
         self.counter += 1
-        return JengaPiece([x, y, z], orientation)
+        return JengaPiece([x, y, z], orientation, number=self.counter)

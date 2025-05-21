@@ -41,4 +41,4 @@ class Magazine:
 
         self.counter += 1
         orientation = [0, 180, 0]
-        return JengaPiece(pos, orientation)
+        return JengaPiece(pos, orientation, self.counter)
