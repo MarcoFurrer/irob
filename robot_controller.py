@@ -45,9 +45,13 @@ class RobotController:
         pos = piece.position.copy()
         pos[2] += z_offset
         pose = pos + piece.orientation
+        print(f"[MOVE_ABOVE] Bewege Roboter über die Position des Steins mit z_offset={z_offset}.")
+        print(f"[MOVE_ABOVE] Zielpose: {pose}")
         self.move_to_pose(pose)
 
     def move_exact(self, piece: JengaPiece):
         """Fährt exakt zur Position des Steins"""
         pose = piece.get_pose()
+        print(f"[MOVE_EXACT] Bewege Roboter exakt zur Position des Steins.")
+        print(f"[MOVE_EXACT] Zielpose: {pose}")
         self.move_to_pose(pose)
