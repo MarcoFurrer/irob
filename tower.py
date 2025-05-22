@@ -1,7 +1,5 @@
-# tower.py
-
-import numpy as np
 from jenga_piece import JengaPiece
+import numpy as np
 
 class Tower:
     def __init__(self, name="TowerFrame", rdk=None)->list:
@@ -28,13 +26,14 @@ class Tower:
 
         layer = piece.number // 3  # Ebene (0-basiert)
         index_in_layer = piece.number % 3
+        is_even_layer = (layer % 2 == 0)
 
 
         return [
-            index_in_layer * piece.width + self.offset_x, 
-            self.offset_y, 
+            index_in_layer * piece.width + self.offset_x if is_even_layer else self.offset_x,
+            self.offset_y if is_even_layer else self.offset_y + index_in_layer * piece.width, 
             self.offset_z + layer * piece.height, 
             0, 
             0, 
-            0
+            np.pi / 2 if is_even_layer else 0
         ]
