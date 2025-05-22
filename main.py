@@ -38,8 +38,9 @@ def main():
     robot.move_to_idle()
 
     # 15 Steine verarbeiten
-    for _ in range(15):
+    for i in range(15):
         source_piece = magazine.get_next_piece()
+        source_piece = jenga_pieces[i]
         target_piece = tower.get_next_target(source_piece)
 
         GrabAtPos(robot, source_piece, gripper)
