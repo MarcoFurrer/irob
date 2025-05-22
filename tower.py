@@ -35,5 +35,13 @@ class Tower:
             self.offset_z + layer * piece.height, 
             0, 
             0, 
-            np.pi / 2 if is_even_layer else 0
+            0 if is_even_layer else np.pi / 2
         ]
+        
+if __name__ == "__main__":
+    from robodk import robolink
+    rdk = robolink.Robolink()
+    tower = Tower(rdk=rdk)
+    jenga_pieces = [JengaPiece(rdk, i) for i in range(15)]
+    for piece in jenga_pieces:
+        print(f"Piece {piece.number} target position: {tower.get_next_target(piece)}")
