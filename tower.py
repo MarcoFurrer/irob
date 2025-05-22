@@ -4,7 +4,7 @@ import numpy as np
 from jenga_piece import JengaPiece
 
 class Tower:
-    def __init__(self, frame_origin):
+    def __init__(self, frame_origin, name="TowerFrame", rdk=None):
         """
         frame_origin: [x, y, z] Position des Turm-Referenzpunkts
         """
@@ -21,6 +21,8 @@ class Tower:
 
         self.counter = 0
         self.max_pieces = 15
+        
+        self.frame = rdk.Item(name)
 
     def get_next_target(self, piece: JengaPiece):
         """Gibt die nächste Zielposition auf dem Turm zurück"""
@@ -45,4 +47,4 @@ class Tower:
             orientation = [0, 180, 180]
 
         self.counter += 1
-        return JengaPiece([x, y, z], orientation, number=self.counter)
+        #return JengaPiece([x, y, z], orientation, number=self.counter)

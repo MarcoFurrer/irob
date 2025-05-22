@@ -4,6 +4,7 @@ import time
 from robodk import robolink
 
 from magazine import Magazine
+from jenga_piece import JengaPiece
 from tower import Tower
 from robot_controller import RobotController
 from gripper import Gripper
@@ -21,33 +22,29 @@ def main():
     tower_frame = [120, 200, -300]
 
     # Objekte erzeugen
-    magazine = Magazine(magazine_frame)
-    tower = Tower(tower_frame)
+    magazine = Magazine(magazine_frame, rdk=rdk, name="MagazineFrame")
+    tower = Tower(tower_frame, rdk=rdk, name="TowerFrame")
     robot = RobotController(rdk)
     gripper = Gripper(rdk)
     
-    jenga_pieces = [rdk.Item(f"AROB_Jengastuck{i+1}") for i in range(0,15)]
-    
-    for piece in jenga_pieces:
-        print(f"Position:{piece.Name()}")
+    jenga_pieces = [JengaPiece(rdk, i) for i in range(1, 16)]
     
     
     
-    # Startposition anfahren
     robot.move_to_start()
     robot.move_to_idle()
 
-    # 15 Steine verarbeiten
-    for i in range(15):
-        source_piece = magazine.get_next_piece()
-        source_piece = jenga_pieces[i]
-        target_piece = tower.get_next_target(source_piece)
+    # # 15 Steine verarbeiten
+    #for piece in jenga_pieces:
+    #    source_piece = magazine.get_next_piece()
+    #     source_piece = jenga_pieces[i]
+    #     target_piece = tower.get_next_target(source_piece)
 
-        GrabAtPos(robot, source_piece, gripper)
-        ReleaseAtPos(robot, target_piece, gripper)
+    #     GrabAtPos(robot, source_piece, gripper)
+    #     ReleaseAtPos(robot, target_piece, gripper)
 
-    # Abschluss
-    robot.move_to_start()
+    # # Abschluss
+    # robot.move_to_start()
 
 if __name__ == "__main__":
     main()
