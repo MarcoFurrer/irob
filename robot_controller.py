@@ -5,6 +5,8 @@ import numpy as np
 from robodk import xyzrpw_2_pose
 from robodk import robolink
 from jenga_piece import JengaPiece
+from robodk import pose_2_xyzrpw
+
 
 class RobotController:
     def __init__(self, rdk, robot_name="Staubli TX2-90L"):
@@ -27,7 +29,7 @@ class RobotController:
     def move_to_pose(self, pose):
         """Bewegt den Roboter zu einer gegebenen Pose (6-Werte-Liste)"""
         self.robot.MoveJ(xyzrpw_2_pose(pose))
-        
+
     def move_to_start(self):
         """Bewegt zu RoboDK-Target 'start_position'"""
         self.robot.MoveJ(self.target_start)
@@ -42,11 +44,24 @@ class RobotController:
 
     def move_above(self, piece: JengaPiece, z_offset=30):
         """Fährt über die Zielposition (z + offset)"""
-        pos = piece.position.copy()
+        pos = pose_2_xyzrpw(piece.piece.Pose())
         pos[2] += z_offset
-        pose = pos + piece.orientation
-        print(f"[MOVE_ABOVE] Bewege Roboter über die Position des Steins mit z_offset={z_offset}.")
-        self.move_to_pose(pose)
+        pose = pos
+        print(
+            f"[MOVE_ABOVE] Bewege Roboter über die Position des Steins mit z_offset={z_offset}."
+        )
+        self.robot.MoveJ(
+            xyzrpw_2_pose(
+                [
+                    pose[0],  # X from original pose
+                    pose[1],  # Y from original pose
+                    pose[2] + z_offset,  # Z + offset
+                    piece.orientation[0],  # RX from orientation
+                    piece.orientation[1],  # RY from orientation
+                    piece.orientation[2],  # RZ from orientation
+                ]
+            )
+        )
 
     def move_exact(self, piece: JengaPiece):
         """Fährt exakt zur Position des Steins"""

@@ -30,12 +30,10 @@ def main():
     jenga_pieces = [JengaPiece(rdk, i) for i in range(1, 16)]
     
     
-    
     robot.move_to_start()
     robot.move_to_idle()
-
+    robot.move_above(jenga_pieces[13], z_offset=30)
     # # 15 Steine verarbeiten
-    #for piece in jenga_pieces:
     #    source_piece = magazine.get_next_piece()
     #     source_piece = jenga_pieces[i]
     #     target_piece = tower.get_next_target(source_piece)

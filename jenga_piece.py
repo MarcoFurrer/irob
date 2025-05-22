@@ -2,11 +2,12 @@
 
 
 class JengaPiece:
-    def __init__(self,rdk, number):
+    def __init__(self,rdk, number, orientation=[0, 0, 0]):
         """
         position: [x, y, z]
         orientation: [rx, ry, rz] in degrees
         """
+        self.orientation = orientation
         self.number = number
         self.width = 25
         self.length = 75
