@@ -7,6 +7,7 @@ from robodk import robolink
 from jenga_piece import JengaPiece
 from robodk import pose_2_xyzrpw
 from gripper import Gripper
+from tower import Tower
 
 
 class RobotController:
@@ -15,29 +16,17 @@ class RobotController:
         self.robot = rdk.Item(robot_name, robolink.ITEM_TYPE_ROBOT)
 
         # Targets aus RoboDK laden
-        self.target_start = rdk.Item("start_position", robolink.ITEM_TYPE_TARGET)
-        self.target_idle = rdk.Item("idle_position", robolink.ITEM_TYPE_TARGET)
-        self.target_home = rdk.Item("home_position", robolink.ITEM_TYPE_TARGET)
+        self.target_home = rdk.Item("home", robolink.ITEM_TYPE_TARGET)
 
         # Fehler prüfen
-        if not self.target_start.Valid():
-            raise Exception("Target 'start_position' wurde in RoboDK nicht gefunden.")
-        if not self.target_idle.Valid():
-            raise Exception("Target 'idle_position' wurde in RoboDK nicht gefunden.")
         if not self.target_home.Valid():
-            raise Exception("Target 'home_position' wurde in RoboDK nicht gefunden.")
+            raise Exception("Target 'home' wurde in RoboDK nicht gefunden.")
 
     def move_to_pose(self, pose):
         """Bewegt den Roboter zu einer gegebenen Pose (6-Werte-Liste)"""
         self.robot.MoveJ(xyzrpw_2_pose(pose))
 
-    def move_to_start(self):
-        """Bewegt zu RoboDK-Target 'start_position'"""
-        self.robot.MoveJ(self.target_start)
 
-    def move_to_idle(self):
-        """Bewegt zu RoboDK-Target 'idle_position'"""
-        self.robot.MoveJ(self.target_idle)
 
     def move_to_home(self):
         """Bewegt zu RoboDK-Target 'home_position'"""
@@ -92,7 +81,6 @@ class RobotController:
         self.move_exact(piece)
         gripper.close()
         self.move_above(piece, z_offset=hover_height)
-        self.move_to_idle()
 
     def ReleaseAtPos(
         self, piece: JengaPiece, gripper: Gripper, hover_height: float = 30.0
@@ -105,8 +93,9 @@ class RobotController:
         4. hebt wieder an
         5. geht in Idle-Position
         """
-        self.move_above(piece, z_offset=hover_height)
-        self.move_exact(piece)
+        self.robot.MoveJ(
+            Tower(rdk=self.rdk).get_next_target(piece)
+        )
         gripper.open()
-        self.move_above(piece, z_offset=hover_height)
-        self.move_to_idle()
+        
+        self.move_to_home()

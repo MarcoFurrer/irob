@@ -23,19 +23,19 @@ def main():
 
     # Objekte erzeugen
     magazine = Magazine(magazine_frame, rdk=rdk, name="MagazineFrame")
-    tower = Tower(tower_frame, rdk=rdk, name="TowerFrame")
     robot = RobotController(rdk)
     gripper = Gripper(rdk)
     
     jenga_pieces = [JengaPiece(rdk, i) for i in range(1, 16)]
     
-    robot.move_to_start()
+    robot.move_to_home()
     
     for piece in jenga_pieces:
+        print(f"Greife Stein {piece.number}...")
         robot.GrabAtPos(piece, gripper)
         robot.ReleaseAtPos(piece, gripper)
         
-    robot.move_to_start()
+    robot.move_to_home()
 
 if __name__ == "__main__":
     main()

@@ -9,7 +9,7 @@ class JengaPiece:
         self.width = 25
         self.length = 75
         self.height = 15
-        self.piece = rdk.Item(f"AROB_Jengastuck{number}")
+        self.piece = rdk.Item(f"jengastuck{number}")
 
     
 if __name__ == "__main__":
