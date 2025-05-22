@@ -8,7 +8,7 @@ from jenga_piece import JengaPiece
 from tower import Tower
 from robot_controller import RobotController
 from gripper import Gripper
-from jenga_logic import GrabAtPos, ReleaseAtPos
+
 
 def main():
     # Initialisierung RoboDK API
@@ -32,8 +32,8 @@ def main():
     robot.move_to_start()
     
     for piece in jenga_pieces:
-        GrabAtPos(robot, piece, gripper)
-        ReleaseAtPos(robot, piece, gripper)
+        robot.GrabAtPos(piece, gripper)
+        robot.ReleaseAtPos(piece, gripper)
         
     robot.move_to_start()
 

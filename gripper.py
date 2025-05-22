@@ -13,3 +13,15 @@ class Gripper:
     def open(self):
         """Öffnet den Greifer (lässt alle Objekte los)"""
         self.tool.DetachAll()
+
+
+if __name__ == "__main__":
+    # Beispiel zur Verwendung des Greifers
+    rdk = robolink.Robolink()
+    gripper = Gripper(rdk)
+    
+    # Greifer öffnen und schließen
+    gripper.open()
+    print("Greifer geöffnet.")
+    gripper.close()
+    print("Greifer geschlossen.")
