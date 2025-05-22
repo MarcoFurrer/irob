@@ -30,7 +30,7 @@ class Tower:
 
 
         return [
-            index_in_layer * piece.width + self.offset_x if is_even_layer else self.offset_x,
+            index_in_layer * piece.width + self.offset_x if is_even_layer else self.offset_x + piece.width/2,
             self.offset_y if is_even_layer else self.offset_y + index_in_layer * piece.width, 
             self.offset_z + layer * piece.height, 
             0, 
