@@ -29,7 +29,7 @@ cfg = JengaConfig()
 RDK = Robolink()
 bot = RDK.Item('Staubli TX2-40')
 tool = RDK.Item('AROB_LWS_VakuumGreifer_14')
-worldFrame = RDK.Item("World")
+worldFrame = RDK.Item("world")
 pickFrame = RDK.Item("MagazinFrame")
 placeFrame = RDK.Item("TowerFrame")
 
