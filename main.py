@@ -18,8 +18,8 @@ def main():
     rdk.setCollisionActive(False)
 
     # Koordinatenursprünge
-    magazine_frame = [330, -100, -300]
-    tower_frame = [120, 200, -300]
+    magazine_frame = [330, -100, -340]
+    tower_frame = [120, 200, -340]
 
     # Objekte erzeugen
     magazine = Magazine(magazine_frame, rdk=rdk, name="MagazineFrame")
