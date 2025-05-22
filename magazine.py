@@ -34,7 +34,7 @@ class Magazine:
 
         if self.counter == 0:
             pos = [base_x, base_y, base_z]
-        elif self.counter % 2 == 0:
+        elif (self.counter+1) % 2 == 0:
             pos = [base_x, base_y + (self.counter // 2) * self.jenga_width, base_z]
         else:
             pos = [base_x - self.jenga_length, base_y + (self.counter // 2) * self.jenga_width, base_z]

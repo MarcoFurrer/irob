@@ -9,6 +9,9 @@ class JengaPiece:
         self.position = position
         self.orientation = orientation
         self.number = number
+        self.width = 25
+        self.length = 75
+        self.height = 15
 
     def get_pose(self):
         """Returns the full pose as a 6-element list (xyz + rpy)"""

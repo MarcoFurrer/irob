@@ -25,7 +25,14 @@ def main():
     tower = Tower(tower_frame)
     robot = RobotController(rdk)
     gripper = Gripper(rdk)
-
+    
+    jenga_pieces = [rdk.Item(f"AROB_Jengastuck{i+1}") for i in range(0,15)]
+    
+    for piece in jenga_pieces:
+        print(f"Position:{piece.Name()}")
+    
+    
+    
     # Startposition anfahren
     robot.move_to_start()
     robot.move_to_idle()
@@ -33,7 +40,7 @@ def main():
     # 15 Steine verarbeiten
     for _ in range(15):
         source_piece = magazine.get_next_piece()
-        target_piece = tower.get_next_target()
+        target_piece = tower.get_next_target(source_piece)
 
         GrabAtPos(robot, source_piece, gripper)
         ReleaseAtPos(robot, target_piece, gripper)

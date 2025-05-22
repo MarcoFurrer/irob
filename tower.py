@@ -22,7 +22,7 @@ class Tower:
         self.counter = 0
         self.max_pieces = 15
 
-    def get_next_target(self):
+    def get_next_target(self, piece: JengaPiece):
         """Gibt die nächste Zielposition auf dem Turm zurück"""
 
         if self.counter >= self.max_pieces:
@@ -33,15 +33,15 @@ class Tower:
         # Unterscheidung zwischen geraden/ungeraden Schichten
         if layer % 2 == 0:
             # Gerade Schicht – Steine quer
-            x = self.frame_origin[0] + self.offset_x + self.jenga_width * (self.counter % 3)
+            x = self.frame_origin[0] + self.offset_x + piece.width * (self.counter % 3)
             y = self.frame_origin[1] + self.offset_y - self.middle_offset
-            z = self.frame_origin[2] + self.jenga_height * (layer - 1)
+            z = self.frame_origin[2] + piece.height * (layer - 1)
             orientation = [0, 180, -90]
         else:
             # Ungerade Schicht – Steine längs
             x = self.frame_origin[0] + self.offset_x - self.middle_offset
-            y = self.frame_origin[1] + self.offset_y + self.jenga_width * (self.counter % 3)
-            z = self.frame_origin[2] + self.jenga_height * (layer - 1)
+            y = self.frame_origin[1] + self.offset_y + piece.width * (self.counter % 3)
+            z = self.frame_origin[2] + piece.height * (layer - 1)
             orientation = [0, 180, 180]
 
         self.counter += 1
