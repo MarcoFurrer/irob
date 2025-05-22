@@ -13,6 +13,7 @@ from gripper import Gripper
 def main():
     # Initialisierung RoboDK API
     rdk = robolink.Robolink()
+    rdk.setSimulationSpeed(0.1)
 
      # ❗ Kollisionserkennung deaktivieren (nur zum Testen!)
     rdk.setCollisionActive(False)
@@ -21,14 +22,14 @@ def main():
     magazine_frame = [330, -100, -340]
     tower_frame = [120, 200, -340]
 
-    # Objekte erzeugen
-    magazine = Magazine(magazine_frame, rdk=rdk, name="MagazineFrame")
+
     robot = RobotController(rdk)
     gripper = Gripper(rdk)
     
     jenga_pieces = [JengaPiece(rdk, i) for i in range(1, 16)]
     
     robot.move_to_home()
+    
     
     for piece in jenga_pieces:
         print(f"Greife Stein {piece.number}...")
