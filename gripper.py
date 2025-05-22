@@ -1,5 +1,3 @@
-# gripper.py
-
 from robodk import robolink
 
 class Gripper:
