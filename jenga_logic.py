@@ -17,7 +17,7 @@ def GrabAtPos(robot_ctrl: RobotController, piece: JengaPiece, gripper: Gripper, 
     robot_ctrl.move_exact(piece)
     gripper.close()
     robot_ctrl.move_above(piece, z_offset=hover_height)
-    robot_ctrl.move_to_idle()
+    #robot_ctrl.move_to_idle()
 
 
 def ReleaseAtPos(robot_ctrl: RobotController, piece: JengaPiece, gripper: Gripper, hover_height: float = 30):
@@ -27,10 +27,10 @@ def ReleaseAtPos(robot_ctrl: RobotController, piece: JengaPiece, gripper: Grippe
     2. senkt sich ab
     3. lässt los
     4. hebt wieder an
-    5. geht in Idle-Position
+    5. geht in Idle-Position #brauchen wir nicht
     """
     robot_ctrl.move_above(piece, z_offset=hover_height)
     robot_ctrl.move_exact(piece)
     gripper.open()
-    robot_ctrl.move_above(piece, z_offset=hover_height)
-    robot_ctrl.move_to_idle()
+    #robot_ctrl.move_above(piece, z_offset=hover_height)
+    #robot_ctrl.move_to_idle()
