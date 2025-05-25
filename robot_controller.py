@@ -1,101 +1,110 @@
-# robot_controller.py
-
-import time
-import numpy as np
-from robodk import xyzrpw_2_pose
-from robodk import robolink
-from jenga_piece import JengaPiece
-from robodk import pose_2_xyzrpw
-from gripper import Gripper
-from tower import Tower
+from RTS import RTS
+from jenga_constants import JengaConstants
+from jenga_piece_collection import JengaPiece
 
 
 class RobotController:
-    def __init__(self, rdk, robot_name="Staubli TX2-90L"):
+    """Main robot controller handling movement and coordination"""
+    
+    def __init__(self, rdk):
         self.rdk = rdk
-        self.robot = rdk.Item(robot_name, robolink.ITEM_TYPE_ROBOT)
-
-        # Targets aus RoboDK laden
-        self.target_home = rdk.Item("home", robolink.ITEM_TYPE_TARGET)
-
-        # Fehler prüfen
-        if not self.target_home.Valid():
-            raise Exception("Target 'home' wurde in RoboDK nicht gefunden.")
-
-    def move_to_pose(self, pose):
-        """Bewegt den Roboter zu einer gegebenen Pose (6-Werte-Liste)"""
-        self.robot.MoveJ(xyzrpw_2_pose(pose))
-
-
-
+        
+        # Initialize robot and tool
+        self.robot = rdk.Item('Staubli TX2-40')
+        self.tool = rdk.Item('AROB_LWS_VakuumGreifer_14')
+        self.world_frame = rdk.Item("World")
+        
+        # Initialize RTS system
+        self.rts = RTS(rdk, self.robot, self.tool)
+        self.rts.addConnection('dVacuum', '98FE10BA-0446-4B8A-A8CF-35B98F42725A', 'dio')
+        self.rts.setGripperConnection('dVacuum')
+        self.rts.addConnection('dVaccumSensor', '98FE10BA-0446-4B8A-A8CF-35B98F42725B', 'aio')
+        
+        self.t_home = [0, 50, 50, 0, 60, 0]
+        self.t_start = [0, 0, 90, 0, 90, 0]
+        
+        
+        # Validate components
+        if not self.robot.Valid():
+            raise Exception("Robot 'Staubli TX2-40' not found in RoboDK")
+        if not self.tool.Valid():
+            raise Exception("Tool 'AROB_LWS_VakuumGreifer_14' not found in RoboDK")
+    
+    def initialize(self):
+        """Initialize robot to start position"""
+        self.robot.setJoints(self.t_start)
+        self.robot.setPoseFrame(self.world_frame)
+        self.robot.setSpeed(50, 50, 50, 75)
+    
     def move_to_home(self):
-        """Bewegt zu RoboDK-Target 'home_position'"""
-        print(self.target_home)
-        self.robot.MoveJ(self.target_home)
-
-    def move_above(self, piece: JengaPiece, z_offset=30):
-        """Fährt über die Zielposition (z + offset)"""
-        pos = pose_2_xyzrpw(piece.piece.Pose())
-        print(
-            f"[MOVE_ABOVE] Bewege Roboter über die Position {pos} des Steins mit z_offset={z_offset}."
-        )
-        self.robot.MoveJ(
-            [
-                pos[0],  # X from original pose
-                pos[1],  # Y from original pose
-                pos[2] + z_offset,  # Z + offset
-                piece.orientation[0],  # RX from orientation
-                piece.orientation[1],  # RY from orientation
-                piece.orientation[2],  # RZ from orientation
-            ]
-        )
-
-    def move_exact(self, piece: JengaPiece):
-        """Fährt exakt zur Position des Steins"""
-        pos = pose_2_xyzrpw(piece.piece.Pose())
-        print(f"[MOVE_EXACT] Bewege Roboter mit Stein {piece.number} nach {pos}.")
-        self.robot.MoveJ(
-            [
-                pos[0],  # X from original pose
-                pos[1],  # Y from original pose
-                pos[2],  # Z + offset
-                piece.orientation[0],  # RX from orientation
-                piece.orientation[1],  # RY from orientation
-                piece.orientation[2],  # RZ from orientation
-            ]
-        )
+        """Move robot to home position"""
+        self.robot.MoveJ(self.t_home)
+    
+    def pick_piece(self, piece, pick_above_poses, pick_poses, speed=10):
+        """Pick up a piece from the magazine"""
+        # Support both JengaPiece objects and piece numbers
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        print(f"Picking up piece {piece_number}")
         
-
-    def GrabAtPos(
-        self, piece: JengaPiece, gripper: Gripper, hover_height: float = 30.0
-    ):
-        """
-        Greift ein Jenga-Stück sicher:
-        1. fährt über das Stück (hover)
-        2. senkt sich ab
-        3. greift
-        4. hebt wieder an
-        5. geht in Idle-Position
-        """
-        self.move_above(piece, z_offset=hover_height)
-        self.move_exact(piece)
-        gripper.close()
-        self.move_above(piece, z_offset=hover_height)
-
-    def ReleaseAtPos(
-        self, piece: JengaPiece, gripper: Gripper, hover_height: float = 30.0
-    ):
-        """
-        Platziert ein Jenga-Stück sicher:
-        1. fährt über die Zielposition (hover)
-        2. senkt sich ab
-        3. lässt los
-        4. hebt wieder an
-        5. geht in Idle-Position
-        """
-        self.robot.MoveJ(
-            Tower(rdk=self.rdk).get_next_target(piece)
-        )
-        gripper.open()
-        
+        # Move to home first
         self.move_to_home()
+        
+        # Move above piece
+        self.robot.MoveJ(pick_above_poses[f"Jenga{piece_number}above"])
+        
+        # Slow movement for precision
+        self.robot.setSpeed(speed)
+        
+        # Move to piece and grab
+        self.robot.MoveL(pick_poses[f"Jenga{piece_number}"])
+        self.rts.setVacuum(1, "dVacuum")
+        
+        # Move back up
+        self.robot.MoveL(pick_above_poses[f"Jenga{piece_number}above"])
+        
+        # Reset speed
+        self.robot.setSpeed(50)
+    
+    def place_piece(self, piece, place_above_pose, place_pose, tower_frame, speed=10):
+        """Place a piece on the tower"""
+        # Support both JengaPiece objects and piece numbers
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        print(f"Placing piece {piece_number}")
+        
+        # Move to home first
+        self.move_to_home()
+        
+        # Move above target
+        self.robot.MoveJ(place_above_pose)
+        
+        # Slow movement for precision
+        self.robot.setSpeed(speed)
+        
+        # Move to placement position and release
+        self.robot.MoveL(place_pose)
+        self.rts.setVacuum(0, "dVacuum")
+        
+        # Attach piece to tower frame (if it's a JengaPiece object)
+        if hasattr(piece, 'attach_to_frame'):
+            piece.attach_to_frame(tower_frame)
+        
+        # Move back up
+        self.robot.MoveL(place_above_pose)
+        
+        # Reset speed and return home
+        self.robot.setSpeed(50)
+        self.move_to_home()
+    
+    def move_piece(self, piece, magazine, tower, pick_above_poses, pick_poses, speed=10):
+        """Complete move operation: pick from magazine and place on tower"""
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        print(f"Moving piece {piece_number} from magazine to tower")
+        
+        # Pick from magazine
+        self.pick_piece(piece, pick_above_poses, pick_poses, speed)
+        
+        # Calculate placement position
+        place_above, place = tower.get_placement_pose_for_piece(piece)
+        
+        # Place on tower
+        self.place_piece(piece, place_above, place, tower.frame, speed)

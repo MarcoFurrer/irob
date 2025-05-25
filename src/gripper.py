@@ -23,3 +23,4 @@ if __name__ == "__main__":
     print("Greifer geöffnet.")
     gripper.close()
     print("Greifer geschlossen.")
+    print(f"Greifer-Tool: {gripper.tool.Name()} at {gripper.tool.Pose()}")
