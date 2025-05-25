@@ -2,7 +2,7 @@ import time
 import numpy as np
 from robodk import robolink
 from robodk import robomath
-from jenga_piece import JengaPiece
+from jenga_piece_collection import JengaPiece
 from gripper import Gripper
 from tower import Tower
 from magazine import Magazine

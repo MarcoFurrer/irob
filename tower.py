@@ -92,3 +92,21 @@ class Tower:
             if piece_layer == layer:
                 pieces_in_layer.append(piece_num)
         return pieces_in_layer
+    
+    def get_pieces_in_layer_objects(self, layer, piece_collection):
+        """Get list of JengaPiece objects in a specific layer (0-based)"""
+        piece_numbers = self.get_pieces_in_layer(layer, piece_collection.get_piece_count())
+        return piece_collection.get_pieces_by_numbers(piece_numbers)
+    
+    def get_layer_for_piece(self, piece):
+        """Get the layer number (0-based) for a given piece"""
+        if hasattr(piece, 'number'):
+            piece_number = piece.number
+        else:
+            piece_number = piece
+        return (piece_number - 1) // 3
+    
+    def get_placement_pose_for_piece(self, piece, hover_height=30):
+        """Calculate placement pose for a JengaPiece object"""
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        return self.get_placement_pose(piece_number, hover_height)

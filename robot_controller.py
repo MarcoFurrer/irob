@@ -1,6 +1,6 @@
 from RTS import RTS
 from jenga_constants import JengaConstants
-from jenga_piece import JengaPiece
+from jenga_piece_collection import JengaPiece
 
 
 class RobotController:
@@ -40,8 +40,10 @@ class RobotController:
         """Move robot to home position"""
         self.robot.MoveJ(self.t_home)
     
-    def pick_piece(self, piece_number, pick_above_poses, pick_poses, speed=10):
+    def pick_piece(self, piece, pick_above_poses, pick_poses, speed=10):
         """Pick up a piece from the magazine"""
+        # Support both JengaPiece objects and piece numbers
+        piece_number = piece.number if hasattr(piece, 'number') else piece
         print(f"Picking up piece {piece_number}")
         
         # Move to home first
@@ -63,9 +65,11 @@ class RobotController:
         # Reset speed
         self.robot.setSpeed(50)
     
-    def place_piece(self, piece: JengaPiece, place_above_pose, place_pose, tower_frame, speed=10):
+    def place_piece(self, piece, place_above_pose, place_pose, tower_frame, speed=10):
         """Place a piece on the tower"""
-        print(f"Placing piece {piece.number}")
+        # Support both JengaPiece objects and piece numbers
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        print(f"Placing piece {piece_number}")
         
         # Move to home first
         self.move_to_home()
@@ -80,8 +84,9 @@ class RobotController:
         self.robot.MoveL(place_pose)
         self.rts.setVacuum(0, "dVacuum")
         
-        # Attach piece to tower frame
-        piece.attach_to_frame(tower_frame)
+        # Attach piece to tower frame (if it's a JengaPiece object)
+        if hasattr(piece, 'attach_to_frame'):
+            piece.attach_to_frame(tower_frame)
         
         # Move back up
         self.robot.MoveL(place_above_pose)
@@ -89,3 +94,17 @@ class RobotController:
         # Reset speed and return home
         self.robot.setSpeed(50)
         self.move_to_home()
+    
+    def move_piece(self, piece, magazine, tower, pick_above_poses, pick_poses, speed=10):
+        """Complete move operation: pick from magazine and place on tower"""
+        piece_number = piece.number if hasattr(piece, 'number') else piece
+        print(f"Moving piece {piece_number} from magazine to tower")
+        
+        # Pick from magazine
+        self.pick_piece(piece, pick_above_poses, pick_poses, speed)
+        
+        # Calculate placement position
+        place_above, place = tower.get_placement_pose_for_piece(piece)
+        
+        # Place on tower
+        self.place_piece(piece, place_above, place, tower.frame, speed)

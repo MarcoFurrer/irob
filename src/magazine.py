@@ -1,7 +1,7 @@
 # magazine.py
 
 import numpy as np
-from jenga_piece import JengaPiece
+from jenga_piece_collection import JengaPiece
 from robodk import robomath
 
 class Magazine:

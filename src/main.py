@@ -4,7 +4,7 @@ import time
 from robodk import robolink
 
 from magazine import Magazine
-from jenga_piece import JengaPiece
+from jenga_piece_collection import JengaPiece
 from tower import Tower
 from robot_controller import RobotController
 from gripper import Gripper

@@ -1,4 +1,4 @@
-from jenga_piece import JengaPiece
+from jenga_piece_collection import JengaPiece
 import numpy as np
 from robodk import robomath
 
