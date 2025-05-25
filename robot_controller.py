@@ -20,6 +20,9 @@ class RobotController:
         self.rts.setGripperConnection('dVacuum')
         self.rts.addConnection('dVaccumSensor', '98FE10BA-0446-4B8A-A8CF-35B98F42725B', 'aio')
         
+        self.t_home = [0, 50, 50, 0, 60, 0]
+        self.t_start = [0, 0, 90, 0, 90, 0]
+        
         
         # Validate components
         if not self.robot.Valid():
@@ -29,13 +32,13 @@ class RobotController:
     
     def initialize(self):
         """Initialize robot to start position"""
-        self.robot.setJoints(JengaConstants.T_START)
+        self.robot.setJoints(self.t_start)
         self.robot.setPoseFrame(self.world_frame)
         self.robot.setSpeed(50, 50, 50, 75)
     
     def move_to_home(self):
         """Move robot to home position"""
-        self.robot.MoveJ(JengaConstants.T_HOME)
+        self.robot.MoveJ(self.t_home)
     
     def pick_piece(self, piece_number, pick_above_poses, pick_poses, speed=10):
         """Pick up a piece from the magazine"""

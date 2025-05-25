@@ -1,5 +1,3 @@
-from jenga_constants import JengaConstants
-
 from robodk.robolink import *
 from robodk.robomath import *
 from robodk.robodialogs import *
