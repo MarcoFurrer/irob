@@ -32,7 +32,9 @@ class JengaPieceCollection:
     
     def get_piece(self, number):
         """Get a specific piece by number"""
-        return self.pieces[number]
+        if number < 1 or number > len(self.pieces):
+            raise ValueError(f"Piece {number} not found in collection")
+        return self.pieces[number - 1]  # Convert 1-based to 0-based indexing
     
     def get_pieces_by_numbers(self, numbers):
         """Get multiple pieces by their numbers"""
@@ -40,7 +42,7 @@ class JengaPieceCollection:
     
     def get_all_pieces(self):
         """Get all pieces as a list, ordered by number"""
-        return [self.pieces[i] for i in sorted(self.pieces)]
+        return self.pieces
     
     def get_piece_count(self):
         """Get total number of pieces in collection"""
@@ -52,5 +54,4 @@ class JengaPieceCollection:
     
     def __iter__(self):
         """Support iteration over pieces in order"""
-        for number in sorted(self.pieces):
-            yield self.pieces[number]
+        return iter(self.pieces)
