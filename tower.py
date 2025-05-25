@@ -45,3 +45,4 @@ if __name__ == "__main__":
     jenga_pieces = [JengaPiece(rdk, i) for i in range(15)]
     for piece in jenga_pieces:
         print(f"Piece {piece.number} target position: {tower.get_next_target(piece)}")
+    print(f"Tower frame: {tower.frame.Name()} at {tower.frame.Pose()}")
