@@ -81,6 +81,7 @@ class RobotController:
         self.move_exact(piece)
         gripper.close()
         self.move_above(piece, z_offset=hover_height)
+        print(f"[GRAB] Roboter hat Stein {piece.number} gegriffen.")
 
     def ReleaseAtPos(
         self, piece: JengaPiece, gripper: Gripper, hover_height: float = 30.0
