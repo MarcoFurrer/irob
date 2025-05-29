@@ -5,6 +5,9 @@ class JengaPiece:
         self.number = number
         self.rdk = rdk
         self.piece = rdk.Item(f"Jengastuck {number}")
+        self.length= 75
+        self.width = 25.5
+        self.height = 15
         
         if not self.piece.Valid():
             raise Exception(f"Jenga piece {number} not found in RoboDK")

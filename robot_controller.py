@@ -1,7 +1,4 @@
 from RTS import RTS
-from jenga_constants import JengaConstants
-from jenga_piece_collection import JengaPiece
-
 
 class RobotController:
     """Main robot controller handling movement and coordination"""
@@ -104,7 +101,7 @@ class RobotController:
         self.pick_piece(piece, pick_above_poses, pick_poses, speed)
         
         # Calculate placement position
-        place_above, place = tower.get_placement_pose_for_piece(piece)
+        place_above, place = tower.get_placement_pose(piece)
         
         # Place on tower
         self.place_piece(piece, place_above, place, tower.frame, speed)
