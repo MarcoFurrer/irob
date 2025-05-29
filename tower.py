@@ -14,7 +14,7 @@ class Tower:
         # Tower base position relative to frame origin
         self.base_x = 0
         self.base_y = 70
-        self.base_z = 70
+        self.base_z = -5
     
     def calculate_piece_position(self, piece_number):
         """
