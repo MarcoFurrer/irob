@@ -1,3 +1,6 @@
+# Hauptprogramm für automatischen Jenga-Turmbau mit Staubli TX2-40 Roboter
+# Implementiert objektorientierte Architektur für modulare Robotersteuerung
+
 from robodk.robolink import *
 from robodk.robomath import *
 from robodk.robodialogs import *
@@ -9,36 +12,36 @@ from jenga_piece_collection import JengaPiece, JengaPieceCollection
 
 
 def main():
-    """Main function for Jenga tower construction"""
+    """Hauptfunktion für den automatisierten Jenga-Turmbau"""
     try:
-        # Create RoboDK connection
+        # Verbindung zu RoboDK-Simulation herstellen
         rdk = Robolink()
         
-        # Initialize subsystems
+        # Initialisierung der Teilsysteme mit objektorientiertem Ansatz
         robot_controller = RobotController(rdk)
         magazine = Magazine(rdk)
         tower = Tower(rdk)
         
-        # Create piece collection
+        # Jenga-Steine als Objektsammlung verwalten (15 Steine)
         pieces = JengaPieceCollection(rdk, 15)
         print(f"Initialized Jenga robot system with {len(pieces)} pieces")
         
-        # Initialize robot system
+        # Robotersystem in Ausgangslage bringen
         print("Initializing robot system...")
         robot_controller.initialize()
         
-        # Generate magazine pickup positions
+        # Pickup-Positionen im Magazin berechnen und generieren
         pick_above_poses, pick_poses = magazine.get_pick_positions()
         print("Magazine pickup positions generated")
         
-        # Start tower construction
+        # Start des sequenziellen Turmbaus
         print("Starting Jenga tower construction...")
         
-        # Process each piece in order using clean iteration
-        for piece in pieces:  # Uses __iter__ method of JengaPieceCollection
+        # Iterative Verarbeitung aller Jenga-Steine in numerischer Reihenfolge
+        for piece in pieces:
             print(f"Processing {piece} for layer {tower.get_layer_for_piece(piece)+1}")
             
-            # Move piece from magazine to tower
+            # Kompletter Bewegungsablauf: Aufnehmen aus Magazin und Platzieren im Turm
             robot_controller.move_piece(
                 piece, 
                 magazine, 
@@ -47,6 +50,7 @@ def main():
                 pick_poses
             )
         
+        # Turmbau erfolgreich abgeschlossen - Roboter in Home-Position
         print("Jenga tower construction completed!")
         robot_controller.move_to_home()
             

@@ -1,8 +1,7 @@
-from jenga_piece_collection import JengaPiece
 from robodk.robomath import *
 
 class Tower:
-    """Handles tower frame and piece placement using dynamic formula"""
+    """Verwaltet Tower-Frame und Stein-Platzierung mit dynamischer Formel"""
     
     def __init__(self, rdk, frame_name="TowerFrame"):
         self.rdk = rdk
@@ -11,101 +10,79 @@ class Tower:
         if not self.frame.Valid():
             raise Exception(f"Tower frame '{frame_name}' not found in RoboDK")
         
-        # Tower base position relative to frame origin
-        self.base_x = 0
-        self.base_y = 70
-        self.base_z = -5
+        # Turm-Basisposition relativ zum Frame-Ursprung
+        self.base_x = 0      
+        self.base_y = 70     
+        self.base_z = 5     
     
     def calculate_piece_position(self, piece):
         """
-        Calculate position for a piece using dynamic formula
-        Returns: (x_offset, y_offset, z, rotation_z)
+        Berechnet Position für Jenga-Stein mit dynamischer Formel
+        Rückgabe: (x_offset, y_offset, z, rotation_z)
         
-        Jenga tower logic:
-        - Even layers (0,2,4...): pieces run along X-axis, spaced in Y direction
-        - Odd layers (1,3,5...): pieces run along Y-axis, spaced in X direction
-        - When rotated, the LENGTH becomes the spacing distance between pieces
+        Jenga-Turm-Logik:
+        - Gerade Layer (0,2,4...): Steine entlang X-Achse, Verteilung in Y-Richtung
+        - Ungerade Layer (1,3,5...): Steine entlang Y-Achse, Verteilung in X-Richtung
+        - Rotation bestimmt Ausrichtung und Abstandsberechnung zwischen Steinen
         """
-        # Convert to 0-based indexing for calculations
+        # Konvertierung zu 0-basiertem Index für Berechnungen
         piece_index = piece.number - 1
         
-        # Calculate layer (0-based) and position within layer
+        # Berechnung Layer (0-basiert) und Position innerhalb des Layers
         layer = piece_index // 3
         index_in_layer = piece_index % 3
         
-        # Determine if this is an even or odd layer (alternating orientations)
+        # Bestimmung ob gerader oder ungerader Layer (alternierende Orientierungen)
         is_even_layer = (layer % 2 == 0)
         
-        # Calculate Z position using piece's own height attribute
-        z = (layer + 1) * piece.height - self.base_z
+        # Z-Position basierend auf Layer-Höhe und Stein-Eigenschaften
+        z = (layer + 1) * piece.height + self.base_z
         
         if is_even_layer:
-            # Even layers: pieces aligned along X-axis (horizontally)
-            # When rotated 90°, pieces are spaced by their WIDTH in the Y direction
+            # Gerade Layer: Steine horizontal entlang X-Achse ausgerichtet
+            # 90° Rotation: Steine werden in Y-Richtung mit WIDTH-Abstand verteilt
             x_offset = 0
-            y_offset = (index_in_layer - 1) * piece.width  # -WIDTH, 0, +WIDTH
-            rotation_z = pi/2  # 90 degrees rotation
+            y_offset = (index_in_layer - 1) * piece.width  # Muster: -WIDTH, 0, +WIDTH
+            rotation_z = pi/2  # 90 Grad Rotation
         else:
-            # Odd layers: pieces aligned along Y-axis (vertically)  
-            # When rotated 180°, pieces are spaced by their WIDTH in the X direction
-            x_offset = (index_in_layer - 1) * piece.width # -WIDTH, 0, +WIDTH
+            # Ungerade Layer: Steine vertikal entlang Y-Achse ausgerichtet  
+            # 0° Rotation: Steine werden in X-Richtung mit WIDTH-Abstand verteilt
+            x_offset = (index_in_layer - 1) * piece.width # Muster: -WIDTH, 0, +WIDTH
             y_offset = 0
-            rotation_z = 0  # 0 degrees rotation (was pi, but 0 is more natural)
+            rotation_z = 0  # 0 Grad Rotation (natürliche Ausrichtung)
         
         return x_offset, y_offset, z, rotation_z
     
     def get_placement_pose(self, piece, hover_height=30):
-        """Calculate placement pose for a piece using dynamic formula"""
-        # Extract piece number from JengaPiece object
+        """Berechnet Platzierungs-Pose für Jenga-Stein mit dynamischer Formel"""
+        # Positionsberechnung basierend auf Stein-Objekt
         piece_number = piece.number
         
         x_offset, y_offset, z, rotation_z = self.calculate_piece_position(piece)
         
-        # Calculate absolute position
+        # Berechnung absoluter Positionen im Tower-Frame
         abs_x = self.base_x + x_offset
         abs_y = self.base_y + y_offset
         abs_z = z
         
-        # Create poses
+        # Erstellung der Ziel-Posen mit Koordinatentransformation
         place_above = (
             self.frame.Pose() * 
             transl(abs_x, abs_y, abs_z + hover_height) * 
             rotz(rotation_z) * 
-            rotx(pi)
+            rotx(pi)  # 180° Rotation für korrekte Greifer-Orientierung
         )
         
         place = (
             self.frame.Pose() * 
             transl(abs_x, abs_y, abs_z) * 
             rotz(rotation_z) * 
-            rotx(pi)
+            rotx(pi)  # 180° Rotation für korrekte Greifer-Orientierung
         )
         
         return place_above, place
     
-    def get_total_layers(self, total_pieces=15):
-        """Calculate total number of layers needed"""
-        return (total_pieces - 1) // 3 + 1
-    
-    def get_pieces_in_layer(self, layer, total_pieces=15):
-        """Get list of piece numbers in a specific layer (0-based)"""
-        pieces_in_layer = []
-        for piece_num in range(1, total_pieces + 1):
-            piece_layer = (piece_num - 1) // 3
-            if piece_layer == layer:
-                pieces_in_layer.append(piece_num)
-        return pieces_in_layer
-    
-    def get_pieces_in_layer_objects(self, layer, piece_collection):
-        """Get list of JengaPiece objects in a specific layer (0-based)"""
-        piece_numbers = self.get_pieces_in_layer(layer, piece_collection.get_piece_count())
-        return piece_collection.get_pieces_by_numbers(piece_numbers)
-    
     def get_layer_for_piece(self, piece):
-        """Get the layer number (0-based) for a given piece"""
-        if hasattr(piece, 'number'):
-            piece_number = piece.number
-        else:
-            piece_number = piece
-        return (piece_number - 1) // 3
+        """Bestimmt Layer-Nummer (0-basiert) für gegebenen Jenga-Stein"""
+        return (piece.number - 1) // 3
     
