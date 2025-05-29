@@ -1,5 +1,24 @@
-# Hauptprogramm für automatischen Jenga-Turmbau mit Staubli TX2-40 Roboter
-# Implementiert objektorientierte Architektur für modulare Robotersteuerung
+
+
+"""
+Automatisierter Jenga-Turmbau mit Staubli TX2-40 Roboter
+========================================================
+
+Autor:          Marco Furrer
+Datum:          29. Mai 2025
+Kurs:           Industrielle Robotik
+Projekt:        Jenga-Turmbau
+
+Beschreibung:
+    Hauptprogramm für automatisierten Jenga-Turmbau mit Staubli Roboter.
+    Implementiert objektorientierte Architektur für modulare Robotersteuerung
+    mit dynamischer Positionsberechnung und Frame-Koordinatentransformation.
+
+Abhängigkeiten (gem. Ordner und requirements.txt):
+    - RoboDK (robolink, robomath, robodialogs)
+    - RTS-System für Vakuum-Greifer-Steuerung
+    - Benutzerdefinierte Module: robot_controller, magazine, tower, jenga_piece_collection
+"""
 
 from robodk.robolink import *
 from robodk.robomath import *
@@ -8,7 +27,7 @@ from robodk.robodialogs import *
 from robot_controller import RobotController
 from magazine import Magazine
 from tower import Tower
-from jenga_piece_collection import JengaPiece, JengaPieceCollection
+from jenga_piece_collection import JengaPieceCollection
 
 
 def main():
